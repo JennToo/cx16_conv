@@ -4,6 +4,9 @@ version = "0.1.0"
 description = ""
 authors = ["Jennifer Wilcox <jennifer@nitori.org>"]
 
+[tool.poetry.scripts]
+"cx16-conv" = 'cx16_conv.cli:common'
+
 [tool.poetry.dependencies]
 python = "^3.8"
 click = "^7.1.2"
