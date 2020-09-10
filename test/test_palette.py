@@ -1,4 +1,4 @@
-from cx16_conv.palette import loads, dumps, DEFAULT_PALETTE
+from cx16_conv.palette import loads, dumps, DEFAULT_PALETTE, Color
 
 
 def test_palette_loading():
@@ -6,3 +6,4 @@ def test_palette_loading():
     text = dumps(pal)
 
     assert text == DEFAULT_PALETTE.strip()
+    assert pal.index_by_color[Color(red=187, green=187, blue=187)] == 27

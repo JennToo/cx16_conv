@@ -1,6 +1,8 @@
 import re
 from dataclasses import dataclass
-from typing import List
+from typing import List, Mapping
+
+from .util import chunks
 
 DEFAULT_PALETTE = """
 000,fff,800,afe,c4c,0c5,00a,ee7,d85,640,f77,333,777,af6,08f,bbb
@@ -22,7 +24,7 @@ c6b,f7d,201,413,615,826,a28,c3a,f3c,201,403,604,806,a08,c09,f0b
 """
 
 
-@dataclass
+@dataclass(eq=True, frozen=True, order=True)
 class Color:
     red: int
     green: int
@@ -32,16 +34,19 @@ class Color:
 @dataclass
 class Palette:
     colors: List[Color]
+    index_by_color: Mapping[Color, int]
 
 
 def loads(text: str) -> Palette:
     triples = re.split(r",|\n|\r\n", text.strip())
-    return Palette(colors=[_color_from_triple(triple) for triple in triples])
+    colors = [_color_from_triple(triple) for triple in triples]
+    index_by_color = {color: index for (index, color) in enumerate(colors)}
+    return Palette(colors=colors, index_by_color=index_by_color)
 
 
 def dumps(palette: Palette) -> str:
     triples = [_color_to_triple(c) for c in palette.colors]
-    return "\n".join(",".join(chunk) for chunk in _chunks(triples, 16))
+    return "\n".join(",".join(chunk) for chunk in chunks(triples, 16))
 
 
 def _color_from_triple(triple):
@@ -61,13 +66,8 @@ def _color_to_triple(color: Color) -> str:
 
 
 def _channel_to_nibble(value):
-    return hex(value >> 4)[2]
+    return hex(int(value * 255 / 16))[2]
 
 
 def _nibble_to_channel(nibble):
-    return int(nibble, 16) << 4
-
-
-def _chunks(list_, count):
-    for i in range(0, len(list_), count):
-        yield list_[i : i + count]
+    return int(int(nibble, 16) * 255 / 15)
