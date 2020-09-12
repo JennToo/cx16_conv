@@ -1,8 +1,15 @@
 [tool.poetry]
 name = "cx16_conv"
 version = "0.1.0"
-description = ""
-authors = ["Jennifer Wilcox <jennifer@nitori.org>"]
+description = "Conversion utilities for the Commander x16"
+license = "MIT"
+homepage = "https://github.com/Nitori-/cx16_conv"
+repository = "https://github.com/Nitori-/cx16_conv"
+keywords = ["x16", "cx16", "Commander X16"]
+readme = "README.md"
+authors = [
+    "Jennifer Wilcox <jennifer@nitori.org>",
+]
 
 [tool.poetry.scripts]
 "cx16-conv" = 'cx16_conv.cli:common'
