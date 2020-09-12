@@ -1,10 +1,10 @@
 from .util import chunks
 
 
-def convert(format: str, symbol_name: str, bytes_: bytes) -> str:
-    if format == "C-array":
+def convert(format_: str, symbol_name: str, bytes_: bytes) -> str:
+    if format_ == "C-array":
         return bytes_to_c_array(symbol_name, bytes_)
-    raise NotImplementedError(format)
+    raise NotImplementedError(format_)
 
 
 def bytes_to_c_array(symbol_name: str, bytes_: bytes) -> str:

@@ -49,6 +49,21 @@ def dumps(palette: Palette) -> str:
     return "\n".join(",".join(chunk) for chunk in chunks(triples, 16))
 
 
+def palette_to_bytes(palette: Palette) -> bytes:
+    result = []
+    for color in palette.colors:
+        b_blue = int(color.blue * 15 / 255)
+        b_green = int(color.green * 15 / 255) << 4
+        b_red = int(color.red * 15 / 255)
+
+        result += [
+            (b_blue | b_green).to_bytes(1, "little"),
+            b_red.to_bytes(1, "little"),
+        ]
+
+    return b"".join(result)
+
+
 def _color_from_triple(triple):
     return Color(
         red=_nibble_to_channel(triple[0]),
