@@ -68,6 +68,13 @@ def palette_to_bytes(palette: Palette) -> bytes:
     return b"".join(result)
 
 
+def palette_to_gpl(palette: Palette) -> str:
+    result = "GIMP Palette\n"
+    for color in palette.colors:
+        result += f"{color.red} {color.green} {color.blue} Untitled\n"
+    return result
+
+
 def _color_from_triple(triple):
     return Color(
         red=_nibble_to_channel(triple[0]),

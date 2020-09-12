@@ -8,6 +8,7 @@ from .palette import (
     DEFAULT_PALETTE,
     palette_to_bytes,
     blank_palette,
+    palette_to_gpl,
 )
 from .image import image_to_bytes, extend_palette_from_image
 from .array import convert
@@ -39,13 +40,18 @@ def gfx(palette, format, input, output, symbol_name):
 
 @pal.command()
 @click.option("-p", "--palette", type=click.Path(exists=True))
-@click.option("-f", "--format", type=click.Choice(["C-array"]), default="C-array")
+@click.option(
+    "-f", "--format", type=click.Choice(["C-array", "GPL"]), default="C-array"
+)
 @click.argument("output")
 @click.argument("symbol_name")
 def export(palette, format, output, symbol_name):
     loaded_palette = load_palette(palette)
-    bytes_ = palette_to_bytes(loaded_palette)
-    data_out = convert(format, symbol_name, bytes_)
+    if format == "GPL":
+        data_out = palette_to_gpl(loaded_palette)
+    else:
+        bytes_ = palette_to_bytes(loaded_palette)
+        data_out = convert(format, symbol_name, bytes_)
     write_file(output, data_out)
 
 
