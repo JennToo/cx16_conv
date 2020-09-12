@@ -37,16 +37,20 @@ class Palette:
     index_by_color: Mapping[Color, int]
 
 
+def blank_palette() -> Palette:
+    return Palette(colors=[Color(0, 0, 0)], index_by_color={})
+
+
 def loads(text: str) -> Palette:
     triples = re.split(r",|\n|\r\n", text.strip())
     colors = [_color_from_triple(triple) for triple in triples]
-    index_by_color = {color: index for (index, color) in enumerate(colors)}
+    index_by_color = {color: index + 1 for (index, color) in enumerate(colors[1:])}
     return Palette(colors=colors, index_by_color=index_by_color)
 
 
 def dumps(palette: Palette) -> str:
     triples = [_color_to_triple(c) for c in palette.colors]
-    return "\n".join(",".join(chunk) for chunk in chunks(triples, 16))
+    return "\n".join(",".join(chunk) for chunk in chunks(triples, 16)) + "\n"
 
 
 def palette_to_bytes(palette: Palette) -> bytes:

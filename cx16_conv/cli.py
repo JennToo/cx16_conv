@@ -1,7 +1,15 @@
+import os
+
 import click
 
-from .palette import loads, DEFAULT_PALETTE, palette_to_bytes
-from .image import image_to_bytes
+from .palette import (
+    loads,
+    dumps,
+    DEFAULT_PALETTE,
+    palette_to_bytes,
+    blank_palette,
+)
+from .image import image_to_bytes, extend_palette_from_image
 from .array import convert
 from .util import write_file
 
@@ -23,11 +31,7 @@ def pal():
 @click.argument("output")
 @click.argument("symbol_name")
 def gfx(palette, format, input, output, symbol_name):
-    if not palette:
-        loaded_palette = loads(DEFAULT_PALETTE)
-    else:
-        raise NotImplementedError()
-
+    loaded_palette = load_palette(palette)
     bytes_ = image_to_bytes(input, loaded_palette)
     data_out = convert(format, symbol_name, bytes_)
     write_file(output, data_out)
@@ -39,10 +43,36 @@ def gfx(palette, format, input, output, symbol_name):
 @click.argument("output")
 @click.argument("symbol_name")
 def export(palette, format, output, symbol_name):
-    if not palette:
-        loaded_palette = loads(DEFAULT_PALETTE)
-    else:
-        raise NotImplementedError()
+    loaded_palette = load_palette(palette)
     bytes_ = palette_to_bytes(loaded_palette)
     data_out = convert(format, symbol_name, bytes_)
     write_file(output, data_out)
+
+
+@pal.command()
+@click.argument("image")
+@click.argument("palette")
+def generate(palette, image):
+    """
+    Generate palette file from an image
+
+    If the palette file already exists, it is extended with any new colors
+    found in the image.
+
+    If the palette file does not already exist, it will be created.
+    """
+    if os.path.exists(palette):
+        with open(palette, "r") as f:
+            loaded_palette = loads(f.read())
+    else:
+        loaded_palette = blank_palette()
+    extend_palette_from_image(image, loaded_palette)
+    write_file(palette, dumps(loaded_palette))
+
+
+def load_palette(palette):
+    if palette is None:
+        return loads(DEFAULT_PALETTE)
+
+    with open(palette, "r") as f:
+        return loads(f.read())
