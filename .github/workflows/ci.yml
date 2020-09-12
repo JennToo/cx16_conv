@@ -1,0 +1,14 @@
+on: [push]
+name: CI
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - run: git submodule update --init --recursive
+      - uses: actions/setup-python@v1
+      - uses: dschep/install-poetry-action@v1.3
+      - run: poetry install
+      - run: poetry run black --check .
+      - run: poetry run pylama .
+      - run: poetry run pytest -vvl
