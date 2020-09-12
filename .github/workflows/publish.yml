@@ -1,0 +1,16 @@
+on:
+  push:
+    tags: v*
+name: Publish
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-python@v1
+      - uses: dschep/install-poetry-action@v1.3
+      - run: poetry build
+      - uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.pypi_password }}
